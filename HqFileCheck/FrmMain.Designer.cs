@@ -38,6 +38,9 @@
             this.columnHeader7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.btnCheck = new System.Windows.Forms.Button();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.toolStripDate = new System.Windows.Forms.ToolStripStatusLabel();
+            this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // lvHq
@@ -71,6 +74,7 @@
             // columnHeader3
             // 
             this.columnHeader3.Text = "文件说明";
+            this.columnHeader3.Width = 65;
             // 
             // columnHeader4
             // 
@@ -80,23 +84,27 @@
             // columnHeader5
             // 
             this.columnHeader5.Text = "是否必须";
+            this.columnHeader5.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // columnHeader6
             // 
             this.columnHeader6.Text = "检查开始时间";
+            this.columnHeader6.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.columnHeader6.Width = 85;
             // 
             // columnHeader7
             // 
             this.columnHeader7.Text = "是否就绪";
+            this.columnHeader7.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // columnHeader8
             // 
             this.columnHeader8.Text = "说明";
+            this.columnHeader8.Width = 165;
             // 
             // btnCheck
             // 
-            this.btnCheck.Location = new System.Drawing.Point(706, 309);
+            this.btnCheck.Location = new System.Drawing.Point(698, 309);
             this.btnCheck.Name = "btnCheck";
             this.btnCheck.Size = new System.Drawing.Size(75, 23);
             this.btnCheck.TabIndex = 1;
@@ -104,16 +112,37 @@
             this.btnCheck.UseVisualStyleBackColor = true;
             this.btnCheck.Click += new System.EventHandler(this.btnCheck_Click);
             // 
+            // statusStrip1
+            // 
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripDate});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 343);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(785, 22);
+            this.statusStrip1.TabIndex = 2;
+            this.statusStrip1.Text = "statusStrip1";
+            // 
+            // toolStripDate
+            // 
+            this.toolStripDate.Name = "toolStripDate";
+            this.toolStripDate.Size = new System.Drawing.Size(142, 17);
+            this.toolStripDate.Text = "当前日期：yyyy-MM-dd";
+            // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(785, 344);
+            this.ClientSize = new System.Drawing.Size(785, 365);
+            this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.btnCheck);
             this.Controls.Add(this.lvHq);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Name = "FrmMain";
             this.Text = "行情文件检查";
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -129,6 +158,8 @@
         private System.Windows.Forms.ColumnHeader columnHeader7;
         private System.Windows.Forms.ColumnHeader columnHeader8;
         private System.Windows.Forms.Button btnCheck;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripDate;
     }
 }
 
