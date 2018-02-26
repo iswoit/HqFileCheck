@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="GBK"?>
+<filelist>
+	<file>
+		<module>上海行情</module>
+		<desc>上海行情库</desc>
+		<path>D:\hq\dbf\mktdt00.txt</path>
+		<required>true</required>
+		<starttime></starttime>
+	</file>
+	<file>
+		<module>上海行情</module>
+		<desc>国债信息库</desc>
+		<path>D:\hq\jt\gzlx.MDD</path>
+		<required>true</required>
+		<starttime></starttime>
+	</file>
+</filelist>

@@ -38,9 +38,13 @@
             this.columnHeader7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.btnCheck = new System.Windows.Forms.Button();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripDate = new System.Windows.Forms.ToolStripStatusLabel();
-            this.statusStrip1.SuspendLayout();
+            this.bgWorker = new System.ComponentModel.BackgroundWorker();
+            this.tbLog = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.statusStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // lvHq
@@ -55,9 +59,9 @@
             this.columnHeader7,
             this.columnHeader8});
             this.lvHq.GridLines = true;
-            this.lvHq.Location = new System.Drawing.Point(4, 5);
+            this.lvHq.Location = new System.Drawing.Point(4, 24);
             this.lvHq.Name = "lvHq";
-            this.lvHq.Size = new System.Drawing.Size(777, 293);
+            this.lvHq.Size = new System.Drawing.Size(824, 250);
             this.lvHq.TabIndex = 0;
             this.lvHq.UseCompatibleStateImageBehavior = false;
             this.lvHq.View = System.Windows.Forms.View.Details;
@@ -83,7 +87,7 @@
             // 
             // columnHeader5
             // 
-            this.columnHeader5.Text = "是否必须";
+            this.columnHeader5.Text = "是否检查";
             this.columnHeader5.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // columnHeader6
@@ -100,11 +104,11 @@
             // columnHeader8
             // 
             this.columnHeader8.Text = "说明";
-            this.columnHeader8.Width = 165;
+            this.columnHeader8.Width = 215;
             // 
             // btnCheck
             // 
-            this.btnCheck.Location = new System.Drawing.Point(698, 309);
+            this.btnCheck.Location = new System.Drawing.Point(753, 347);
             this.btnCheck.Name = "btnCheck";
             this.btnCheck.Size = new System.Drawing.Size(75, 23);
             this.btnCheck.TabIndex = 1;
@@ -112,15 +116,15 @@
             this.btnCheck.UseVisualStyleBackColor = true;
             this.btnCheck.Click += new System.EventHandler(this.btnCheck_Click);
             // 
-            // statusStrip1
+            // statusStrip
             // 
-            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripDate});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 343);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(785, 22);
-            this.statusStrip1.TabIndex = 2;
-            this.statusStrip1.Text = "statusStrip1";
+            this.statusStrip.Location = new System.Drawing.Point(0, 378);
+            this.statusStrip.Name = "statusStrip";
+            this.statusStrip.Size = new System.Drawing.Size(840, 22);
+            this.statusStrip.TabIndex = 2;
+            this.statusStrip.Text = "statusStrip1";
             // 
             // toolStripDate
             // 
@@ -128,19 +132,57 @@
             this.toolStripDate.Size = new System.Drawing.Size(142, 17);
             this.toolStripDate.Text = "当前日期：yyyy-MM-dd";
             // 
+            // bgWorker
+            // 
+            this.bgWorker.WorkerReportsProgress = true;
+            this.bgWorker.WorkerSupportsCancellation = true;
+            this.bgWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.bgWorker_DoWork);
+            this.bgWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.bgWorker_ProgressChanged);
+            this.bgWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.bgWorker_RunWorkerCompleted);
+            // 
+            // tbLog
+            // 
+            this.tbLog.Location = new System.Drawing.Point(4, 306);
+            this.tbLog.Multiline = true;
+            this.tbLog.Name = "tbLog";
+            this.tbLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.tbLog.Size = new System.Drawing.Size(743, 64);
+            this.tbLog.TabIndex = 3;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(4, 288);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(35, 12);
+            this.label1.TabIndex = 4;
+            this.label1.Text = "日志:";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(4, 5);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(59, 12);
+            this.label2.TabIndex = 5;
+            this.label2.Text = "文件列表:";
+            // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(785, 365);
-            this.Controls.Add(this.statusStrip1);
+            this.ClientSize = new System.Drawing.Size(840, 400);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.tbLog);
+            this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.btnCheck);
             this.Controls.Add(this.lvHq);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Name = "FrmMain";
             this.Text = "行情文件检查";
-            this.statusStrip1.ResumeLayout(false);
-            this.statusStrip1.PerformLayout();
+            this.statusStrip.ResumeLayout(false);
+            this.statusStrip.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -158,8 +200,12 @@
         private System.Windows.Forms.ColumnHeader columnHeader7;
         private System.Windows.Forms.ColumnHeader columnHeader8;
         private System.Windows.Forms.Button btnCheck;
-        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.StatusStrip statusStrip;
         private System.Windows.Forms.ToolStripStatusLabel toolStripDate;
+        private System.ComponentModel.BackgroundWorker bgWorker;
+        private System.Windows.Forms.TextBox tbLog;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
     }
 }
 

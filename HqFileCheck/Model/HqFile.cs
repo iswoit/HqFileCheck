@@ -11,6 +11,8 @@ namespace HqFileCheck
         private string _path;                   // 文件路径
         private bool _required;               // 是否必须
         private DateTime? _startTime;      // 开始检查时间
+
+        private bool _isRunning;                // 是否正在检查
         private bool _isOK;                     // 是否就绪
         private Status _status;                 // 状态
 
@@ -26,6 +28,7 @@ namespace HqFileCheck
             if (DateTime.TryParse(startTime, out tmpDT))
                 _startTime = tmpDT;
 
+            _isRunning = false;
             _isOK = false;
             _status = Status.未开始;
         }
@@ -59,14 +62,22 @@ namespace HqFileCheck
             get { return _startTime; }
         }
 
+        public bool IsRunning
+        {
+            get { return _isRunning; }
+            set { _isRunning = value; }
+        }
+
         public bool IsOK
         {
             get { return _isOK; }
+            set { _isOK = value; }
         }
 
         public Status Status
         {
             get { return _status; }
+            set { _status = value; }
         }
 
         #endregion 属性
