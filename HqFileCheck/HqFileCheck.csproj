@@ -47,6 +47,9 @@
       <DependentUpon>FrmMain.cs</DependentUpon>
     </Compile>
     <Compile Include="Manager.cs" />
+    <Compile Include="Model\DoubleBufferListView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Model\HqFile.cs" />
     <Compile Include="Model\UserState.cs" />
     <Compile Include="Program.cs" />

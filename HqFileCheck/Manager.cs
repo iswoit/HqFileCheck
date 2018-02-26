@@ -49,8 +49,9 @@ namespace HqFileCheck
                         string module = string.Empty;                                   // ta代码
                         string desc = string.Empty;                                 // 备注（仅仅显示）
                         string path = string.Empty;
-                        string required = string.Empty;
                         string startTime = string.Empty;
+                        string extraType = string.Empty;
+                        string extraFormat = string.Empty;
 
 
                         foreach (XmlNode xnChildAttr in xnChild)
@@ -68,18 +69,34 @@ namespace HqFileCheck
                                 case "path":
                                     path = tmpValue;
                                     break;
-                                case "required":
-                                    required = tmpValue;
-                                    break;
                                 case "starttime":
                                     startTime = tmpValue;
                                     break;
+                                case "extra":
+                                    {
+                                        foreach (XmlNode xnChildChildAttr in xnChildAttr)
+                                        {
+                                            string tmpChildKey = xnChildChildAttr.Name.ToLower().Trim();
+                                            string tmpChildValue = xnChildChildAttr.InnerText.Trim();
+                                            switch (tmpChildKey)
+                                            {
+                                                case "type":
+                                                    extraType = tmpChildValue;
+                                                    break;
+                                                case "format":
+                                                    extraFormat = tmpChildValue;
+                                                    break;
+                                            }
+
+                                        }
+                                        break;
+                                    }
                             }//eof switch
                         }//eof foreach
 
 
                         // 生成对象，加入列表
-                        _listHqFile.Add(new HqFile(module, desc, path, required, startTime, DtNow));
+                        _listHqFile.Add(new HqFile(module, desc, path, startTime, DtNow, extraType, extraFormat));
 
                     }//eof if ta
                 }//eof foreach
@@ -114,6 +131,83 @@ namespace HqFileCheck
         {
             get { return _listHqFile; }
         }
+
+
+        public int GetAllRequiredCnt
+        {
+            get
+            {
+                int ret = 0;
+                foreach (HqFile tmpHqFile in _listHqFile)
+                {
+                    if (tmpHqFile.Required)
+                        ret++;
+                }
+
+                return ret;
+            }
+        }
+
+
+        public int GetFinishedRequiredCnt
+        {
+            get
+            {
+                int ret = 0;
+                foreach (HqFile tmpHqFile in _listHqFile)
+                {
+                    if (tmpHqFile.Required && tmpHqFile.IsOK)
+                        ret++;
+                }
+
+                return ret;
+            }
+        }
+
+
+        public int GetAllCnt
+        {
+            get
+            {
+                return _listHqFile.Count;
+            }
+        }
+
+        public int GetFinishedCnt
+        {
+            get
+            {
+                int ret = 0;
+                foreach (HqFile tmpHqFile in _listHqFile)
+                {
+                    if (tmpHqFile.IsOK)
+                        ret++;
+                }
+
+                return ret;
+            }
+        }
+
+        /// <summary>
+        /// 所有行情文件都就绪
+        /// </summary>
+        public bool IsAllOK
+        {
+            get
+            {
+                foreach (HqFile tmpHqFile in _listHqFile)
+                {
+                    if (tmpHqFile.Required)
+                    {
+                        if (!tmpHqFile.IsOK)
+                            return false;
+                    }
+                }
+
+                return true;
+            }
+        }
+
         #endregion 属性
     }
 }
