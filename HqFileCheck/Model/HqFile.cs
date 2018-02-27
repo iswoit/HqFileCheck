@@ -15,10 +15,12 @@ namespace HqFileCheck
         private string _module;                 // 模块
         private string _desc;                   // 描述
         private string _path;                   // 文件路径
-        private bool _required;                 // 是否检查
+        private string _market;                 // 市场
+        private bool _isTradingDay;             // 是否是交易日
         private DateTime? _startTime;           // 开始检查时间
-        private string _extraType;               // 额外检查-文件类型
-        private string _extraFormat;             // 额外检查-字段位置
+        private bool _required;                 // 是否检查
+        private string _extraType;              // 额外检查-文件类型
+        private string _extraFormat;            // 额外检查-字段位置
 
         private bool _isRunning;                // 是否正在检查
         private bool _isOK;                     // 是否就绪
@@ -35,20 +37,24 @@ namespace HqFileCheck
         /// <param name="module"></param>
         /// <param name="desc"></param>
         /// <param name="path"></param>
+        /// <param name="market"></param>
         /// <param name="startTime"></param>
         /// <param name="dtNow"></param>
         /// <param name="extraType"></param>
         /// <param name="extraFormat"></param>
-        public HqFile(string module, string desc, string path, string startTime, DateTime dtNow, string extraType, string extraFormat)
+        public HqFile(string module, string desc, string path, string market, string startTime, DateTime dtNow, string extraType, string extraFormat)
         {
             _module = module;
             _desc = desc;
             _path = Util.ReplaceStringWithDateFormat(path, dtNow);
-            _required = true;
-
+            _market = market;
+            _isTradingDay = true;   // 默认都是交易日
+            
             DateTime tmpDT;
             if (DateTime.TryParse(startTime, out tmpDT))
                 _startTime = tmpDT;
+
+            _required = true;       // 后续计算更新
 
             _extraType = extraType;
             _extraFormat = extraFormat;
@@ -212,16 +218,28 @@ namespace HqFileCheck
             get { return _path; }
         }
 
-        public bool Required
+        public string Market
         {
-            get { return _required; }
-            set { _required = value; }
+            get { return _market; }
+        }
+
+        public bool IsTradingDay
+        {
+            get { return _isTradingDay; }
+            set { _isTradingDay = value; }
         }
 
         public DateTime? StartTime
         {
             get { return _startTime; }
         }
+
+        public bool Required
+        {
+            get { return _required; }
+            set { _required = value; }
+        }
+
 
         public bool IsRunning
         {

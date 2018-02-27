@@ -23,14 +23,27 @@ namespace HqFileCheck
             // 加载配置文件
             try
             {
+                // 1.生成manager对象
                 _manager = Manager.GetInstance();
+
+                // 2.数据库查询交易日，更新HqFile的是否交易
+                try
+                {
+                    _manager.UpdateMarketStatus();
+                    string strMessage = "获取数据库交易日完成";
+                    Print_Message(strMessage);
+                }
+                catch (Exception ex)
+                {
+                    Print_Message("获取数据库交易日失败(默认当天为交易日). 原因: " + ex.Message);
+                }
                 InitLvHq();
 
                 toolStripDate.Text = string.Format("当前日期：{0}", _manager.DtNow.ToString("yyyy-MM-dd"));
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message + System.Environment.NewLine + "请确认配置文件正确后重启程序!");
             }
         }
 
@@ -47,18 +60,30 @@ namespace HqFileCheck
                 lvi.SubItems.Add(tmpHqFile.Module);
                 lvi.SubItems.Add(tmpHqFile.Desc);
                 lvi.SubItems.Add(tmpHqFile.Path);
-                lvi.SubItems.Add(tmpHqFile.Required ? "√" : "×");
+                lvi.SubItems.Add(tmpHqFile.Market);
+                lvi.SubItems.Add(tmpHqFile.IsTradingDay ? "√" : "×");
                 lvi.SubItems.Add(tmpHqFile.StartTime.HasValue ? tmpHqFile.StartTime.Value.ToString("HH:mm:ss") : "任意");
+                lvi.SubItems.Add(tmpHqFile.Required ? "√" : "×");
                 lvi.SubItems.Add(tmpHqFile.IsOK ? "√" : "×");
                 lvi.SubItems.Add(tmpHqFile.Status.ToString());
                 lvi.Tag = tmpHqFile;
 
                 lvHq.Items.Add(lvi);
 
-                if (tmpHqFile.IsOK)
-                    lvi.BackColor = SystemColors.Window;
+                if (tmpHqFile.Required)
+                {
+                    if (tmpHqFile.IsOK)
+                        lvHq.Items[i].BackColor = SystemColors.Window;
+                    else
+                        lvHq.Items[i].BackColor = Color.Pink;
+                }
                 else
-                    lvi.BackColor = Color.Pink;
+                {
+                    if (tmpHqFile.IsOK)
+                        lvHq.Items[i].BackColor = SystemColors.Window;
+                    else
+                        lvHq.Items[i].BackColor = Color.LightYellow;
+                }
 
                 i++;
             }
@@ -81,9 +106,9 @@ namespace HqFileCheck
                 for (int i = 0; i < _manager.ListHqFile.Count; i++)
                 {
                     HqFile tmpHqFile = (HqFile)lvHq.Items[i].Tag;   // 配置对象
-                    lvHq.Items[i].SubItems[4].Text = tmpHqFile.Required ? "√" : "×";
-                    lvHq.Items[i].SubItems[6].Text = tmpHqFile.IsOK ? "√" : "×";              // 标志到齐
-                    lvHq.Items[i].SubItems[7].Text = tmpHqFile.Status.ToString();             // 状态
+                    lvHq.Items[i].SubItems[7].Text = tmpHqFile.Required ? "√" : "×";
+                    lvHq.Items[i].SubItems[8].Text = tmpHqFile.IsOK ? "√" : "×";              // 标志到齐
+                    lvHq.Items[i].SubItems[9].Text = tmpHqFile.Status.ToString();             // 状态
 
 
                     if (tmpHqFile.IsRunning)
@@ -93,7 +118,7 @@ namespace HqFileCheck
                     }
                     else
                     {
-                        if(tmpHqFile.Required)
+                        if (tmpHqFile.Required)
                         {
                             if (tmpHqFile.IsOK)
                                 lvHq.Items[i].BackColor = SystemColors.Window;
@@ -111,7 +136,7 @@ namespace HqFileCheck
                 }
 
 
-                if(_manager.IsAllOK)
+                if (_manager.IsAllOK)
                 {
                     lbIsAllOK.Text = "是";
                     lbIsAllOK.ForeColor = Color.Green;
@@ -155,6 +180,10 @@ namespace HqFileCheck
             {
                 BackgroundWorker bgWorker = sender as BackgroundWorker;
 
+                UserState us;   // 日志输出对象
+                us = new UserState(true, @"****检查开始****");
+                bgWorker.ReportProgress(1, us);
+
                 foreach (HqFile tmpHqFile in _manager.ListHqFile)
                 {
                     // 取消事件处理
@@ -164,26 +193,33 @@ namespace HqFileCheck
                         return;
                     }
 
-                    
+
                     tmpHqFile.IsRunning = true;
                     bgWorker.ReportProgress(1);
                     Thread.Sleep(50);
 
 
                     // 如果项有时间，更新是否检查标志
-                    if(tmpHqFile.StartTime.HasValue)
+                    if (tmpHqFile.IsTradingDay == true)
                     {
-                        DateTime dtNow = DateTime.Now;
-                        DateTime dtTmp = new DateTime(dtNow.Year, dtNow.Month, dtNow.Day, tmpHqFile.StartTime.Value.Hour, tmpHqFile.StartTime.Value.Minute, tmpHqFile.StartTime.Value.Second);
-                        if(dtNow>= dtTmp)
+                        if (tmpHqFile.StartTime.HasValue)
                         {
-                            tmpHqFile.Required = true;
+                            DateTime dtNow = DateTime.Now;
+                            DateTime dtTmp = new DateTime(dtNow.Year, dtNow.Month, dtNow.Day, tmpHqFile.StartTime.Value.Hour, tmpHqFile.StartTime.Value.Minute, tmpHqFile.StartTime.Value.Second);
+                            if (dtNow >= dtTmp)
+                            {
+                                tmpHqFile.Required = true;
+                            }
+                            else
+                            {
+                                tmpHqFile.Required = false;
+                            }
                         }
                         else
-                        {
-                            tmpHqFile.Required = false;
-                        }
+                            tmpHqFile.Required = true;
                     }
+                    else
+                        tmpHqFile.Required = false;
 
 
                     // 判断文件是否存在
@@ -196,10 +232,18 @@ namespace HqFileCheck
                     }
                     else
                     {
-                        if(tmpHqFile.Required==true)
-                            tmpHqFile.Status = Status.文件不存在;
+                        if (tmpHqFile.IsTradingDay == true)
+                        {
+                            if (tmpHqFile.Required == true)
+                                tmpHqFile.Status = Status.文件不存在;
+                            else
+                                tmpHqFile.Status = Status.文件不存在_时间点未到;
+                        }
                         else
-                            tmpHqFile.Status = Status.文件不存在_时间点未到;
+                            tmpHqFile.Status = Status.文件不存在_非交易日;
+
+
+
                         tmpHqFile.IsOK = false;
                         tmpHqFile.IsRunning = false;
 
@@ -227,11 +271,20 @@ namespace HqFileCheck
                         }
                         else
                         {
-                            tmpHqFile.Status = Status.文件非当日文件;
-                            tmpHqFile.IsOK = false;
+                            if (tmpHqFile.IsTradingDay == true)
+                            {
+                                tmpHqFile.Status = Status.文件非当日文件;
 
-                            UserState us = new UserState(true, string.Format(@"[{0}][{1}] 文件日期为{2}, 并非当天文件!", tmpHqFile.Module, tmpHqFile.Path, dtFile.ToString("yyyy-MM-dd")));
-                            bgWorker.ReportProgress(1, us);
+                                tmpHqFile.IsOK = false;
+                                us = new UserState(true, string.Format(@"[{0}][{1}] 文件日期为{2}, 并非当天文件!", tmpHqFile.Module, tmpHqFile.Path, dtFile.ToString("yyyy-MM-dd")));
+                                bgWorker.ReportProgress(1, us);
+                            }
+                            else
+                            {
+                                tmpHqFile.IsOK = false;
+                                tmpHqFile.Status = Status.文件不存在_非交易日;
+                                bgWorker.ReportProgress(1);
+                            }
                         }
                     }
                     catch (Exception ex)
@@ -240,7 +293,7 @@ namespace HqFileCheck
                         tmpHqFile.IsOK = false;
                         tmpHqFile.IsRunning = false;
 
-                        UserState us = new UserState(true, ex.Message);
+                        us = new UserState(true, ex.Message);
                         bgWorker.ReportProgress(1, us);
                         continue;
                     }
@@ -304,7 +357,7 @@ namespace HqFileCheck
             else
             {
                 UpdateLvHq();
-                Print_Message(string.Format(@"检查完成. 进度: 必检文件({0}/{1}) 所有文件({2}/{3}), 是否已就绪: {4}", _manager.GetFinishedRequiredCnt, _manager.GetAllRequiredCnt, _manager.GetFinishedCnt, _manager.GetAllCnt,_manager.IsAllOK?"是":"否"));
+                Print_Message(string.Format(@"****检查完毕 [文件进度: 所有文件({2}/{3}), 必检文件({0}/{1}), 是否已就绪: {4}]****", _manager.GetFinishedRequiredCnt, _manager.GetAllRequiredCnt, _manager.GetFinishedCnt, _manager.GetAllCnt, _manager.IsAllOK ? "是" : "否"));
                 //UpdateFileSourceInfo();
                 //UpdateFileListInfo();
 

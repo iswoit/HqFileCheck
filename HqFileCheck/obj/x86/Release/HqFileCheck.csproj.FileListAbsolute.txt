@@ -1,0 +1,7 @@
+D:\Codes\C#\HqFileCheck\HqFileCheck\bin\x86\Release\HqFileCheck.exe
+D:\Codes\C#\HqFileCheck\HqFileCheck\bin\x86\Release\HqFileCheck.pdb
+D:\Codes\C#\HqFileCheck\HqFileCheck\obj\x86\Release\HqFileCheck.FrmMain.resources
+D:\Codes\C#\HqFileCheck\HqFileCheck\obj\x86\Release\HqFileCheck.Properties.Resources.resources
+D:\Codes\C#\HqFileCheck\HqFileCheck\obj\x86\Release\HqFileCheck.csproj.GenerateResource.Cache
+D:\Codes\C#\HqFileCheck\HqFileCheck\obj\x86\Release\HqFileCheck.exe
+D:\Codes\C#\HqFileCheck\HqFileCheck\obj\x86\Release\HqFileCheck.pdb
